@@ -13,12 +13,12 @@ export const blogRouter = new Hono<{
   };
 }>();
 
-// Prisma client initialization
-const prisma = new PrismaClient().$extends(withAccelerate());
-
 // Authorization middleware
 blogRouter.use("/*", async (c, next) => {
-  const jwt = c.req.header("Authorization");
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
+  const jwt = c.req.header("Authorization") || "";
   if (!jwt) {
     return c.json({ error: "unauthorized" }, 401);
   }
@@ -37,6 +37,9 @@ blogRouter.use("/*", async (c, next) => {
 
 // post a blog
 blogRouter.post("/", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
   const body = await c.req.json();
   const userId = c.get("userId");
   const blog = await prisma.post.create({
@@ -49,8 +52,27 @@ blogRouter.post("/", async (c) => {
   return c.json(blog.id, 201);
 });
 
+// Get all blogs
+blogRouter.get("/all", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
+  try {
+    const blogs = await prisma.post.findMany({});
+    return c.json(blogs);
+  } catch (error) {
+    c.status(411);
+    return c.json({
+      message: "Error while fetching ",
+    });
+  }
+});
+
 // Get specific blog
 blogRouter.get("/:id", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
   const id = c.req.param("id");
   console.log(id);
   try {
@@ -68,21 +90,11 @@ blogRouter.get("/:id", async (c) => {
   }
 });
 
-// Get all blogs
-blogRouter.get("/all", async (c) => {
-  try {
-    const blogs = await prisma.post.findMany();
-    return c.json(blogs);
-  } catch (error) {
-    c.status(411);
-    return c.json({
-      message: "Error while fetching ",
-    });
-  }
-});
-
 // Update a blog
 blogRouter.put("/", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
   const body = await c.req.json();
   const blog = await prisma.post.update({
     where: {
