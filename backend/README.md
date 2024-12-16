@@ -9,6 +9,8 @@ npm run deploy
 
 //deployed backend url: https://backend.aryanbansal290903.workers.dev/
 
+//deployed frontend url: https://blog-cwp0j1jux-aryan-bansals-projects.vercel.app/
+
 //deployed common npm package name: common-utils-aryan
 
 //if u make any change in backend:
