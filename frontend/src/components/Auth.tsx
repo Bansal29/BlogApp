@@ -31,11 +31,13 @@ export const Auth = ({ type }: { type: "signup" | "signin" }) => {
     try {
       const response = await axios.post(
         `${BACKEND_URL}/api/v1/user/${type === "signup" ? "signup" : "signin"}`,
-        postInputs
+        postInputs,
       );
       const jwt = response.data.jwt;
+      const name = response.data.name || postInputs.name || "You";
       console.log("authtoken:", jwt);
       localStorage.setItem("token", jwt);
+      localStorage.setItem("userName", name);
       navigate("/blogs");
     } catch (e) {
       alert("Error while signing up");

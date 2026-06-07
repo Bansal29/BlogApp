@@ -12,6 +12,7 @@ export const app = new Hono<{
 
 app.use(cors({ origin: "*" }));
 
+app.get("/", (c) => c.text("Backend is running"));
 app.route("/api/v1/user", userRouter);
 app.route("/api/v1/blog", blogRouter);
 
